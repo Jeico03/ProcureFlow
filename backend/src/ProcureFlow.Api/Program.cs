@@ -1,18 +1,10 @@
-
-using Microsoft.EntityFrameworkCore;
-using ProcureFlow.Infrastructure.Persistence;
+﻿using ProcureFlow.Infrastructure.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 
-var connectionString = builder.Configuration
-    .GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException(
-        "The database connection string 'DefaultConnection' was not found.");
-
-builder.Services.AddDbContext<ProcureFlowDbContext>(options =>
-    options.UseSqlServer(connectionString));
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
