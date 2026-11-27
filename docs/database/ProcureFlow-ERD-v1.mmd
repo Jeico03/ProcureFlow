@@ -1,0 +1,214 @@
+erDiagram
+    Role ||--o{ User : assigns
+    Department ||--o{ User : belongs_to
+
+    Category ||--o{ Product : classifies
+
+    Supplier ||--o{ PurchaseOrder : supplies
+    Department ||--o{ PurchaseOrder : requested_by
+    User ||--o{ PurchaseOrder : creates
+    User ||--o{ PurchaseOrder : assigned_to
+
+    PurchaseOrder ||--|{ PurchaseOrderItem : contains
+    Product ||--o{ PurchaseOrderItem : referenced_by
+
+    User ||--o{ TaxConfiguration : updates
+
+    PurchaseOrder ||--o{ Approval : has
+    User ||--o{ Approval : reviews
+
+    PurchaseOrder ||--o{ Request : receives
+    User ||--o{ Request : creates
+    User o|--o{ Request : reviews
+
+    PurchaseOrder ||--o{ ReceivingIssue : has
+    PurchaseOrderItem ||--o{ ReceivingIssue : affects
+    User ||--o{ ReceivingIssue : reports
+    User o|--o{ ReceivingIssue : resolves
+
+    User o|--o{ AuditLog : performs
+
+    PurchaseOrder o|--o{ Attachment : attaches
+    Request o|--o{ Attachment : attaches
+    ReceivingIssue o|--o{ Attachment : attaches
+    User ||--o{ Attachment : uploads
+
+    User ||--o{ Notification : receives
+
+    Role {
+        int Id PK
+        string Name UK
+        string Description
+        datetime CreatedAt
+    }
+
+    User {
+        int Id PK
+        string FirstName
+        string LastName
+        string Email UK
+        string PasswordHash
+        int RoleId FK
+        int DepartmentId FK
+        boolean IsActive
+        datetime CreatedAt
+        datetime UpdatedAt
+    }
+
+    Department {
+        int Id PK
+        string Name UK
+        string Description
+        boolean IsActive
+        datetime CreatedAt
+        datetime UpdatedAt
+    }
+
+    Supplier {
+        int Id PK
+        string Name
+        string ContactName
+        string Email
+        string Phone
+        string Address
+        boolean IsActive
+        datetime CreatedAt
+        datetime UpdatedAt
+    }
+
+    Category {
+        int Id PK
+        string Name UK
+        string Description
+        boolean IsActive
+        datetime CreatedAt
+        datetime UpdatedAt
+    }
+
+    Product {
+        int Id PK
+        string SKU UK
+        string Name
+        string Description
+        int CategoryId FK
+        decimal UnitPrice
+        string Status
+        datetime CreatedAt
+        datetime UpdatedAt
+    }
+
+    PurchaseOrder {
+        int Id PK
+        string OrderNumber UK
+        int SupplierId FK
+        int DepartmentId FK
+        int CreatedByUserId FK
+        int AssignedToUserId FK
+        string Status
+        string Justification
+        date ExpectedDeliveryDate
+        decimal Subtotal
+        decimal TaxAmount
+        decimal TotalAmount
+        datetime CreatedAt
+        datetime UpdatedAt
+    }
+
+    PurchaseOrderItem {
+        int Id PK
+        int PurchaseOrderId FK
+        int ProductId FK
+        string ProductName
+        string SKU
+        decimal Quantity
+        decimal UnitPrice
+        decimal TaxRate
+        decimal TaxAmount
+        decimal LineTotal
+    }
+
+    TaxConfiguration {
+        int Id PK
+        string TaxName
+        decimal TaxRate
+        boolean IsActive
+        int UpdatedByUserId FK
+        datetime UpdatedAt
+    }
+
+    Approval {
+        int Id PK
+        int PurchaseOrderId FK
+        int ApproverUserId FK
+        string Decision
+        string Comments
+        datetime CreatedAt
+        datetime DecidedAt
+    }
+
+    Request {
+        int Id PK
+        int PurchaseOrderId FK
+        int CreatedByUserId FK
+        int ReviewedByUserId FK "nullable"
+        string Type
+        string Status
+        string Reason
+        string Description
+        datetime CreatedAt
+        datetime ReviewedAt
+    }
+
+    ReceivingIssue {
+        int Id PK
+        int PurchaseOrderId FK
+        int PurchaseOrderItemId FK
+        int ReportedByUserId FK
+        int ResolvedByUserId FK "nullable"
+        string Type
+        string Description
+        string Status
+        string ResolutionNotes
+        datetime CreatedAt
+        datetime ResolvedAt
+    }
+
+    AuditLog {
+        int Id PK
+        int UserId FK "nullable"
+        string Action
+        string EntityType
+        int EntityId
+        string Details
+        datetime CreatedAt
+    }
+
+    Attachment {
+        int Id PK
+        int PurchaseOrderId FK "nullable"
+        int RequestId FK "nullable"
+        int ReceivingIssueId FK "nullable"
+        int UploadedByUserId FK
+        string FileName
+        string StorageKey
+        string ContentType
+        bigint FileSize
+        boolean IsDeleted
+        datetime UploadedAt
+        datetime DeletedAt
+    }
+
+    Notification {
+        int Id PK
+        int RecipientUserId FK
+        string Type
+        string Title
+        string Message
+        string RelatedEntityType
+        int RelatedEntityId
+        boolean IsRead
+        boolean IsDeleted
+        datetime CreatedAt
+        datetime ReadAt
+        datetime DeletedAt
+    }
